@@ -28,24 +28,28 @@ def data_fetch(query):
 @app.route("/api/pokemon", methods=['GET'])
 def get_pokemon():
     data = data_fetch("SELECT * FROM pokemon")
+
     return make_response(jsonify(data), 200)
 
 
 @app.route("/api/pokemon/<int:pok_id>", methods=['GET'])
 def get_pokemon_by_id(pok_id):
     data = data_fetch("SELECT * FROM pokemon WHERE pok_id = {}".format(pok_id))
+
     return make_response(jsonify(data), 200)
 
 
 @app.route("/api/pokemon/<string:pok_name>", methods=['GET'])
 def get_pokemon_by_name(pok_name):
     data = data_fetch("SELECT * FROM pokemon WHERE pok_name = '{}'".format(pok_name))
+
     return make_response(jsonify(data), 200)
 
 
 @app.route("/api/pokemon/type", methods=['GET'])
 def get_all_types():
     data = data_fetch("SELECT type_name FROM types")
+
     return make_response(jsonify(data), 200)
 
 
@@ -58,8 +62,30 @@ def get_pokemon_by_type(type_name):
            INNER JOIN types t ON pt.type_id = t.type_id
            WHERE t.type_name = '{}'
        """.format(type_name)
-
     data = data_fetch(query)
+
+    return make_response(jsonify(data), 200)
+
+
+@app.route("/api/pokemon/ability", methods=['GET'])
+def get_pokemon_abilities():
+    query = "SELECT abil_name FROM abilities"
+    data = data_fetch(query)
+
+    return make_response(jsonify(data), 200)
+
+
+@app.route("/api/pokemon/ability/<string:abil_name>", methods=['GET'])
+def get_pokemon_by_ability(abil_name):
+    query = """
+        SELECT pa.pok_id, p.pok_name, ab.abil_name, pa.is_hidden, pa.slot
+        FROM pokemon_abilities pa 
+        INNER JOIN pokemon p ON pa.pok_id = p.pok_id
+        INNER JOIN abilities ab ON pa.abil_id = ab.abil_id
+        WHERE ab.abil_name = '{}'
+    """.format(abil_name)
+    data = data_fetch(query)
+
     return make_response(jsonify(data), 200)
 
 

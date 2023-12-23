@@ -35,6 +35,11 @@ class TestPokemonApi(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue("grass" in response.data.decode())
 
+    def test_filter_by_ability(self):
+        response = self.app.get("/api/pokemon/ability/overgrow")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue("bulbasaur" in response.data.decode())
+
 
 if __name__ == '__main__':
     unittest.main()
