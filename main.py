@@ -1,4 +1,4 @@
-from flask import Flask, make_response, jsonify
+from flask import Flask, make_response, jsonify, request
 from flask_mysqldb import MySQL
 
 app = Flask(__name__)
@@ -87,6 +87,26 @@ def get_pokemon_by_ability(abil_name):
     data = data_fetch(query)
 
     return make_response(jsonify(data), 200)
+
+
+@app.route("/api/pokemon", methods=['POST'])
+def add_pokemon():
+    if request.is_json:
+        data = request.get_json()
+        pok_name = data.get('pok_name')
+        pok_height = data.get('pok_height')
+        pok_weight = data.get('pok_weight')
+        pok_base_experience = data.get('pok_base_experience')
+
+        query = f"INSERT INTO pokemon VALUES (0, '{pok_name}', {pok_height}, {pok_weight}, {pok_base_experience})"
+        cur = mysql.connection.cursor()
+        cur.execute(query)
+        mysql.connection.commit()
+        cur.close()
+
+        return make_response(jsonify({"message": "Pokemon added successfully"}), 201)
+    else:
+        return make_response(jsonify({"error": "Invalid JSON data"}), 400)
 
 
 if __name__ == '__main__':
