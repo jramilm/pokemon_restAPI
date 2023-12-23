@@ -52,6 +52,11 @@ class TestPokemonApi(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("Pokemon updated successfully", response.get_json()["message"])
 
+    def test_delete_pokemon(self):
+        response = self.app.delete("/api/pokemon/732")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Pokemon deleted successfully", response.get_json()["message"])
+
 
 if __name__ == '__main__':
     unittest.main()

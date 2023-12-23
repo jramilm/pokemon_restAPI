@@ -134,5 +134,29 @@ def update_pokemon(pok_id):
         return make_response(jsonify({"error": "Invalid JSON data"}), 400)
 
 
+@app.route("/api/pokemon/<int:pok_id>", methods=["DELETE"])
+def delete_pokemon(pok_id):
+    cur = mysql.connection.cursor()
+
+    # Check if the Pokemon exists before attempting to delete
+    exists_query = "SELECT * FROM pokemon WHERE pok_id = {}".format(pok_id)
+    cur.execute(exists_query)
+    if not cur.fetchone():
+        cur.close()
+        return make_response(jsonify({"error": "Pokemon not found"}), 404)
+
+    delete_query = "DELETE FROM pokemon WHERE pok_id = {}".format(pok_id)
+    cur.execute(delete_query)
+    mysql.connection.commit()
+    rows_affected = cur.rowcount
+    cur.close()
+
+    if rows_affected > 0:
+        return make_response(jsonify({"message": "Pokemon deleted successfully", "rows_affected": rows_affected}), 200)
+    else:
+        # If no rows were affected, it means the specified pok_id was not found
+        return make_response(jsonify({"error": "Pokemon not found"}), 404)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
