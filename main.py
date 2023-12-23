@@ -28,7 +28,30 @@ def data_fetch(query):
 
 @app.route("/api/pokemon", methods=['GET'])
 def get_pokemon():
-    data = data_fetch("SELECT * FROM pokemon")
+    search_criteria = request.args.get("search", None)
+
+    if search_criteria:
+        query = f"""
+                SELECT 
+                    p.pok_id,
+                    p.pok_name,
+                    p.pok_height,
+                    p.pok_weight,
+                    p.pok_base_experience,
+                    t.type_name,
+                    ab.abil_name,
+                    pa.is_hidden,
+                    pa.slot
+                FROM pokemon p
+                INNER JOIN pokemon_types pt ON p.pok_id = pt.pok_id
+                INNER JOIN types t ON pt.type_id = t.type_id
+                INNER JOIN pokemon_abilities pa ON p.pok_id = pa.pok_id
+                INNER JOIN abilities ab ON pa.abil_id = ab.abil_id
+                WHERE {search_pokemon(search_criteria)}
+            """
+        data = data_fetch(query)
+    else:
+        data = data_fetch("SELECT * FROM pokemon")
 
     formatted_data = format_output(data)
     return make_response(formatted_data, 200)
@@ -212,6 +235,15 @@ def format_output(data):
         return make_response(xml_data, 200, {"Content-Type": "application/xml"})
     else:
         return make_response(jsonify({"error": "Invalid format specified"}), 400)
+
+
+def search_pokemon(search_criteria):
+    conditions = []
+    criteria_list = search_criteria.split(",")
+    for criterion in criteria_list:
+        key, value = criterion.split(":")
+        conditions.append(f"{key} = '{value}'")
+    return " AND ".join(conditions)
 
 
 if __name__ == '__main__':
