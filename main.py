@@ -1,5 +1,6 @@
 from flask import Flask, make_response, jsonify, request
 from flask_mysqldb import MySQL
+from dicttoxml import dicttoxml
 
 app = Flask(__name__)
 app.config["MYSQL_HOST"] = "localhost"
@@ -29,7 +30,8 @@ def data_fetch(query):
 def get_pokemon():
     data = data_fetch("SELECT * FROM pokemon")
 
-    return make_response(jsonify(data), 200)
+    formatted_data = format_output(data)
+    return make_response(formatted_data, 200)
 
 
 @app.route("/api/pokemon/<int:pok_id>", methods=['GET'])
@@ -54,7 +56,8 @@ def get_pokemon_by_id(pok_id):
     """.format(pok_id)
     data = data_fetch(query)
 
-    return make_response(jsonify(data), 200)
+    formatted_data = format_output(data)
+    return make_response(formatted_data, 200)
 
 
 @app.route("/api/pokemon/<string:pok_name>", methods=['GET'])
@@ -79,14 +82,16 @@ def get_pokemon_by_name(pok_name):
         """.format(pok_name)
     data = data_fetch(query)
 
-    return make_response(jsonify(data), 200)
+    formatted_data = format_output(data)
+    return make_response(formatted_data, 200)
 
 
 @app.route("/api/pokemon/type", methods=['GET'])
 def get_all_types():
     data = data_fetch("SELECT type_name FROM types")
 
-    return make_response(jsonify(data), 200)
+    formatted_data = format_output(data)
+    return make_response(formatted_data, 200)
 
 
 @app.route("/api/pokemon/type/<string:type_name>", methods=['GET'])
@@ -100,7 +105,8 @@ def get_pokemon_by_type(type_name):
        """.format(type_name)
     data = data_fetch(query)
 
-    return make_response(jsonify(data), 200)
+    formatted_data = format_output(data)
+    return make_response(formatted_data, 200)
 
 
 @app.route("/api/pokemon/ability", methods=['GET'])
@@ -108,7 +114,8 @@ def get_pokemon_abilities():
     query = "SELECT abil_name FROM abilities"
     data = data_fetch(query)
 
-    return make_response(jsonify(data), 200)
+    formatted_data = format_output(data)
+    return make_response(formatted_data, 200)
 
 
 @app.route("/api/pokemon/ability/<string:abil_name>", methods=['GET'])
@@ -122,7 +129,8 @@ def get_pokemon_by_ability(abil_name):
     """.format(abil_name)
     data = data_fetch(query)
 
-    return make_response(jsonify(data), 200)
+    formatted_data = format_output(data)
+    return make_response(formatted_data, 200)
 
 
 @app.route("/api/pokemon", methods=['POST'])
@@ -192,6 +200,18 @@ def delete_pokemon(pok_id):
     else:
         # If no rows were affected, it means the specified pok_id was not found
         return make_response(jsonify({"error": "Pokemon not found"}), 404)
+
+
+def format_output(data):
+    output_format = request.args.get("format", "json").lower()
+
+    if output_format == "json":
+        return jsonify(data)
+    elif output_format == "xml":
+        xml_data = dicttoxml(data)
+        return make_response(xml_data, 200, {"Content-Type": "application/xml"})
+    else:
+        return make_response(jsonify({"error": "Invalid format specified"}), 400)
 
 
 if __name__ == '__main__':
