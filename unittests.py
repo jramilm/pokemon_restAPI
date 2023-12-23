@@ -46,6 +46,12 @@ class TestPokemonApi(unittest.TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertIn("Pokemon added successfully", response.get_json()["message"])
 
+    def test_update_pokemon(self):
+        data = {"pok_name": 'Gobi', "pok_height": 12, "pok_weight": 12, "pok_base_experience": 100}
+        response = self.app.put("/api/pokemon/726", json=data)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Pokemon updated successfully", response.get_json()["message"])
+
 
 if __name__ == '__main__':
     unittest.main()

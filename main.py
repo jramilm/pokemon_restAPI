@@ -109,5 +109,30 @@ def add_pokemon():
         return make_response(jsonify({"error": "Invalid JSON data"}), 400)
 
 
+@app.route("/api/pokemon/<int:pok_id>", methods=['PUT'])
+def update_pokemon(pok_id):
+    if request.is_json:
+        data = request.get_json()
+        pok_name = data.get('pok_name')
+        pok_height = data.get('pok_height')
+        pok_weight = data.get('pok_weight')
+        pok_base_experience = data.get('pok_base_experience')
+
+        query = f"""
+            UPDATE pokemon 
+            SET pok_name = '{pok_name}', pok_height = {pok_height}, pok_weight = {pok_weight}, pok_base_experience = {pok_base_experience}
+            WHERE pok_id = {pok_id}
+        """
+        cur = mysql.connection.cursor()
+        cur.execute(query)
+        mysql.connection.commit()
+        rows_affected = cur.rowcount
+        cur.close()
+
+        return make_response(jsonify({"message": "Pokemon updated successfully", "rows_affected": rows_affected}), 200)
+    else:
+        return make_response(jsonify({"error": "Invalid JSON data"}), 400)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
