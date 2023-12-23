@@ -55,13 +55,13 @@ curl "http://localhost:5000/api/pokemon?search=pok_name:Bulbasaur,type_name:Gras
 ### 4. Add Pokemon
 
 ```bash
-curl -X POST -H "Content-Type: application/json" -d '{\"pok_name\": \"Charmander\", \"pok_height\": 0.6, \"pok_weight\": 8.5, \"pok_base_experience\": 64}' http://localhost:5000/api/pokemon
+curl -X POST -H "Content-Type: application/json" -d "{\"pok_name\": \"Charmander\", \"pok_height\": 6, \"pok_weight\": 8, \"pok_base_experience\": 64}" http://localhost:5000/api/pokemon
 ```
 
 ### 5. Update Pokemon
 
 ```bash
-curl -X PUT -H "Content-Type: application/json" -d '{\"pok_name\": \"Charizard\"}' http://localhost:5000/api/pokemon/4
+curl -X PUT -H "Content-Type: application/json" -d "{\"pok_name\": \"Charizard\"}" http://localhost:5000/api/pokemon/4
 ```
 
 ### 6. Delete Pokemon
