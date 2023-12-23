@@ -29,7 +29,7 @@ This project is a Flask-based API for managing Pokemon data, including informati
 5. Run the application:
 
    ```bash
-   python app.py
+   python main.py
    ```
 
 ## Usage Examples
@@ -75,7 +75,7 @@ curl -X DELETE http://localhost:5000/api/pokemon/4
 Unit tests are available to ensure the correctness of the API. To run the tests, use the following command:
 
 ```bash
-python test_app.py
+python unittests.py
 ```
 
 Make sure to have the required dependencies installed before running the tests. The test script (`test_app.py`) contains various test cases for different API endpoints and functionalities.
