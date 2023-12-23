@@ -34,14 +34,50 @@ def get_pokemon():
 
 @app.route("/api/pokemon/<int:pok_id>", methods=['GET'])
 def get_pokemon_by_id(pok_id):
-    data = data_fetch("SELECT * FROM pokemon WHERE pok_id = {}".format(pok_id))
+    query = """
+        SELECT 
+            p.pok_id,
+            p.pok_name,
+            p.pok_height,
+            p.pok_weight,
+            p.pok_base_experience,
+            t.type_name,
+            ab.abil_name,
+            pa.is_hidden,
+            pa.slot
+        FROM pokemon p
+        INNER JOIN pokemon_types pt ON p.pok_id = pt.pok_id
+        INNER JOIN types t ON pt.type_id = t.type_id
+        INNER JOIN pokemon_abilities pa ON p.pok_id = pa.pok_id
+        INNER JOIN abilities ab ON pa.abil_id = ab.abil_id
+        WHERE p.pok_id = {}
+    """.format(pok_id)
+    data = data_fetch(query)
 
     return make_response(jsonify(data), 200)
 
 
 @app.route("/api/pokemon/<string:pok_name>", methods=['GET'])
 def get_pokemon_by_name(pok_name):
-    data = data_fetch("SELECT * FROM pokemon WHERE pok_name = '{}'".format(pok_name))
+    query = """
+            SELECT 
+                p.pok_id,
+                p.pok_name,
+                p.pok_height,
+                p.pok_weight,
+                p.pok_base_experience,
+                t.type_name,
+                ab.abil_name,
+                pa.is_hidden,
+                pa.slot
+            FROM pokemon p
+            INNER JOIN pokemon_types pt ON p.pok_id = pt.pok_id
+            INNER JOIN types t ON pt.type_id = t.type_id
+            INNER JOIN pokemon_abilities pa ON p.pok_id = pa.pok_id
+            INNER JOIN abilities ab ON pa.abil_id = ab.abil_id
+            WHERE p.pok_name = '{}'
+        """.format(pok_name)
+    data = data_fetch(query)
 
     return make_response(jsonify(data), 200)
 
